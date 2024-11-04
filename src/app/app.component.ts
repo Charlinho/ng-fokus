@@ -1,3 +1,4 @@
+import { CacheInspectorService } from './shared/services/cache-inspector.service';
 import { Component, effect, OnInit, inject } from '@angular/core';
 import { UpdateService } from './shared/services/update.service';
 import { ConnectivityService } from './shared/services/connectivity.service';
@@ -13,6 +14,7 @@ export class AppComponent implements OnInit {
   private updateService = inject(UpdateService);
   private notificationService = inject(NotificationService);
   private connectivityService = inject(ConnectivityService);
+  private cacheInspector = inject(CacheInspectorService);
 
   constructor() {
     effect(() => {
@@ -30,5 +32,7 @@ export class AppComponent implements OnInit {
     if (hasUpdate) {
       console.log('Atualização encontrada durante a inicialização');
     }
+
+    this.cacheInspector.checkAssetsCache();
   }
 }
