@@ -22,6 +22,8 @@ export class NotificationService {
   }
 
   subscribeToNotifications() {
+    if (!this.swPush.isEnabled) return;
+
     this.swPush.requestSubscription({
       serverPublicKey: this.VAPID_PUBLIC_KEY
     })
