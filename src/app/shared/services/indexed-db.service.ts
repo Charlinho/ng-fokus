@@ -1,7 +1,9 @@
-import { Inject, Injectable, PLATFORM_ID } from '@angular/core';
-import { BehaviorSubject, filter, Observable, switchMap, take } from 'rxjs';
-import { TaskItem } from '../components/task-manager/task-item';
+import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { filter, take, switchMap } from 'rxjs/operators';
+import * as CryptoJS from 'crypto-js';
+import { TaskItem } from '../components/task-manager/task-item';
 
 @Injectable({
   providedIn: 'root'
@@ -10,11 +12,21 @@ export class IndexedDBService {
   private readonly db$ = new BehaviorSubject<IDBDatabase | null>(null);
   private readonly store = { name: 'tasks', key: 'uuid' };
   private dbReady$ = new BehaviorSubject<boolean>(false);
+  private readonly secretKey = 'caad7153-27bf-43b7-896f-8cf21e28d846';
 
   constructor(@Inject(PLATFORM_ID) private platformId: Object) {
     if (isPlatformBrowser(this.platformId)) {
       this.initDB();
     }
+  }
+
+  private encrypt(data: any): string {
+    return CryptoJS.AES.encrypt(JSON.stringify(data), this.secretKey).toString();
+  }
+
+  private decrypt(encryptedData: string): any {
+    const bytes = CryptoJS.AES.decrypt(encryptedData, this.secretKey);
+    return JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
   }
 
   private initDB(): void {
