@@ -64,7 +64,14 @@ export class IndexedDBService {
   addTask(task: TaskItem): Observable<TaskItem> {
     return this.waitForDB().pipe(
       switchMap(() => new Observable<TaskItem>(obs => {
-        const req = this.store$.add(task);
+        const encryptedTask = {
+          uuid: task.uuid,
+          encryptedData: this.encrypt({
+            ...task
+          })
+        };
+
+        const req = this.store$.add(encryptedTask);
         req.onsuccess = () => { obs.next(task); obs.complete(); };
         req.onerror = () => obs.error('Add task failed');
       }))
@@ -75,7 +82,21 @@ export class IndexedDBService {
     return this.waitForDB().pipe(
       switchMap(() => new Observable<TaskItem[]>(obs => {
         const req = this.store$.getAll();
-        req.onsuccess = () => { obs.next(req.result); obs.complete(); };
+        req.onsuccess = () => {
+          try {
+            const decryptedTasks = req.result.map(encryptedTask => {
+              const decryptedData = this.decrypt(encryptedTask.encryptedData);
+              return {
+                ...decryptedData,
+                uuid: encryptedTask.uuid
+              };
+            });
+            obs.next(decryptedTasks);
+            obs.complete();
+          } catch (error) {
+            obs.error('Decryption failed');
+          }
+        };
         req.onerror = () => obs.error('List tasks failed');
       }))
     );
