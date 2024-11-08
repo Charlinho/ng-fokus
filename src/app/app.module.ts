@@ -9,6 +9,7 @@ import { HeaderComponent } from './shared/components/header/header.component';
 import { FooterComponent } from './shared/components/footer/footer.component';
 import { TaskManagerComponent } from './shared/components/task-manager/task-manager.component';
 import { TimerControlComponent } from './shared/components/timer-control/timer-control.component';
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
   declarations: [
@@ -19,6 +20,7 @@ import { TimerControlComponent } from './shared/components/timer-control/timer-c
     BannerComponent,
     HeaderComponent,
     FooterComponent,
+    HttpClientModule,
     BrowserAnimationsModule,
     TaskManagerComponent,
     TimerControlComponent,
