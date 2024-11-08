@@ -38,4 +38,12 @@ export class UpdateService {
       return false;
     }
   }
+
+  private promptUserToUpdate(): void {
+    if (confirm('Nova versão disponível. Deseja atualizar agora?')) {
+      this.swUpdate.activateUpdate()
+        .then(() => window.location.reload())
+        .catch(error => console.error('Erro ao ativar atualização:', error));
+    }
+  }
 }
